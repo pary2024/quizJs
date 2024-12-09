@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Quiz App</title>
+</head>
+<body>
+    <div class="app">
+        <h1>Simple Quiz</h1>
+        <hr>
+        <div class="quiz">
+            <h2 id="Question">Question goes here</h2>
+            <div class="answer-btn" id="answer-btn"></div>
+            <button class="next" style="display: none;">Next</button>
+        </div>
+    </div>
+</body>
+<script>
+    const Questios = [
+        {
+            question: "Which is the name of your country?",
+            answer: [
+                { text: "Cambodia", correct: true },
+                { text: "Thailand", correct: false },
+                { text: "Vietnam", correct: false },
+                { text: "Singapore", correct: false },
+            ]
+        },
+        {
+            question: "Which is the big animal?",
+            answer: [
+                { text: "Cat", correct: false },
+                { text: "Elephant", correct: true },
+                { text: "Dog", correct: false },
+                { text: "Pig", correct: false },
+            ]
+        },
+        {
+            question: "Who is the author?",
+            answer: [
+                { text: "Pary", correct: true },
+                { text: "Sok", correct: false },
+                { text: "Thida", correct: false },
+                { text: "Phalin", correct: false },
+            ]
+        },
+        {
+            question: "What is the major of the author?",
+            answer: [
+                { text: "Architecture", correct: false },
+                { text: "Business", correct: false },
+                { text: "IT", correct: true },
+                { text: "Administration", correct: false },
+            ]
+        }
+    ];
+
+    const answerBtns = document.querySelector('.answer-btn');
+    const Question = document.getElementById('Question');
+    const next = document.querySelector('.next');
+
+    let correctIndex = 0;
+    let score = 0;
+
+    const startQuiz = () => {
+        correctIndex = 0;
+        score = 0;
+        next.innerHTML = "Next";
+        next.style.display = 'none';
+        showQuestion();
+    };
+
+    const showQuestion = () => {
+        resetState();
+        const currentQuestion = Questios[correctIndex];
+        Question.innerHTML = `${correctIndex + 1}. ${currentQuestion.question}`;
+
+        currentQuestion.answer.forEach(answer => {
+            const button = document.createElement('button');
+            button.innerHTML = answer.text;
+            button.classList.add('btn');
+            if (answer.correct) {
+                button.dataset.correct = answer.correct;
+            }
+            button.addEventListener('click', selectAnswer);
+            answerBtns.appendChild(button);
+        });
+    };
+
+    const resetState = () => {
+        next.style.display = 'none';
+        while (answerBtns.firstChild) {
+            answerBtns.removeChild(answerBtns.firstChild);
+        }
+    };
+
+    const selectAnswer = (e) => {
+        const selectedButton = e.target;
+        const isCorrect = selectedButton.dataset.correct === "true";
+        if (isCorrect) {
+            selectedButton.classList.add('correct');
+            score++;
+        } else {
+            selectedButton.classList.add('incorrect');
+        }
+
+        Array.from(answerBtns.children).forEach(button => {
+            if (button.dataset.correct === "true") {
+                button.classList.add('correct');
+            }
+            button.disabled = true;
+        });
+
+        next.style.display = 'block';
+    };
+
+    const showScore = () => {
+        resetState();
+        Question.innerHTML = `Your score: ${score} out of ${Questios.length}`;
+        next.innerHTML = "Play Again";
+        next.style.color= 'black'; 
+        next.style.display = 'block';
+    };
+
+    const handleNextButton = () => {
+        correctIndex++;
+        if (correctIndex < Questios.length) {
+            showQuestion();
+        } else {
+            showScore();
+        }
+    };
+
+    next.addEventListener('click', () => {
+        if (correctIndex < Questios.length) {
+            handleNextButton();
+        } else {
+            startQuiz();
+        }
+    });
+
+    startQuiz();
+</script>
+</html>
